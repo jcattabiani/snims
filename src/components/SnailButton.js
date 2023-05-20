@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import '../styles.css';
 import { Icon } from '@iconify/react';
-import {  Dialog, DialogContent } from '@mui/material';
+import { Dialog, DialogContent } from '@mui/material';
 import SnailForm from './SnailForm';
-
 
 const SnailButton = () => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -17,12 +15,13 @@ const SnailButton = () => {
     setIsExpanded(false);
   };
 
-   const openModal = () => {
+  const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setIsExpanded(false);
   };
 
   return (
@@ -35,7 +34,6 @@ const SnailButton = () => {
         <button className="create-button" onClick={openModal}>
           Create New Snail
         </button>
-
       ) : (
         <div className="icon-container">
           <Icon icon="mdi:snail" />
@@ -43,11 +41,10 @@ const SnailButton = () => {
       )}
 
       <Dialog open={isModalOpen} onClose={closeModal} maxWidth="xs" fullWidth>
-        <DialogContent className="modal-content">
-          <SnailForm />
+        <DialogContent>
+          <SnailForm onClose={closeModal} />
         </DialogContent>
       </Dialog>
-
     </div>
   );
 };
