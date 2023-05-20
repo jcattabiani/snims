@@ -68,7 +68,7 @@ const SnailForm = ({ onClose }) => {
           <label htmlFor="color">Color:</label>
           <div className="color-picker-container">
             <SliderPicker
-              color=""
+              color={watch('color')}
               onChange={handleColorChange}
               className="form-color-picker"
             />
