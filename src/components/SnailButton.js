@@ -36,7 +36,7 @@ const SnailButton = () => {
         </button>
       ) : (
         <div className="icon-container">
-          <Icon icon="mdi:snail" />
+          <Icon icon="mdi:snail" width="30"/>
         </div>
       )}
 
