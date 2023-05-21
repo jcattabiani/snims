@@ -9,6 +9,7 @@ import { SliderPicker } from 'react-color';
 const SnailForm = ({ onClose }) => {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm();
   const [personalityFields, setPersonalityFields] = useState([]);
+  const [color, setColor] = useState('#bf4040');
 
   const addPersonalityField = () => {
     const newField = {
@@ -27,25 +28,25 @@ const SnailForm = ({ onClose }) => {
 
   const handleColorChange = (color) => {
     setValue('color', color.hex);
+    setColor(color.hex); // Update the color state
   };
 
   const onSubmit = (data) => {
-  const { name, backstory, color } = data;
+    const { name, backstory, color } = data;
 
-  // Retrieve personality traits from the form fields
-  const personalityTraits = personalityFields.map((field) => field.value);
+    const personalityTraits = personalityFields.map((field) => field.value);
 
-  const formData = {
-    name,
-    backstory,
-    color,
-    personality: personalityTraits,
+    const formData = {
+      name,
+      backstory,
+      color,
+      personality: personalityTraits,
+    };
+
+    console.log(formData);
+
+    // Replace with form submission logic
   };
-
-  console.log(formData);
-
-  // Replace with form submission logic
-};
 
   return (
     <div>
@@ -68,7 +69,7 @@ const SnailForm = ({ onClose }) => {
           <label htmlFor="color">Color:</label>
           <div className="color-picker-container">
             <SliderPicker
-              color={watch('color')}
+              color={watch('color') || color}
               onChange={handleColorChange}
               className="form-color-picker"
             />
@@ -91,7 +92,7 @@ const SnailForm = ({ onClose }) => {
         {personalityFields.length > 0 && (
           <div className="form-group">
             <h3 className="personality-heading" style={{ textAlign: 'center', margin: '0 auto' }}>
-             Personality:
+              Personality:
             </h3>
           </div>
         )}
@@ -127,9 +128,9 @@ const SnailForm = ({ onClose }) => {
               fullWidth
               onClick={addPersonalityField}
               style={{
-                color: watch('color'),
-                borderColor: watch('color'),
-                outlineColor: watch('color'),
+                color: watch('color') || color, // Set the initial color value
+                borderColor: watch('color') || color, // Set the initial color value
+                outlineColor: watch('color') || color, // Set the initial color value
               }}
             >
               Add Personality Trait
@@ -141,7 +142,7 @@ const SnailForm = ({ onClose }) => {
           <Button
             type="submit"
             variant="contained"
-            style={{ backgroundColor: watch('color') }}
+            style={{ backgroundColor: watch('color') || color }} // Set the initial color value
             color="primary"
           >
             Submit
