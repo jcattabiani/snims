@@ -6,12 +6,13 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { SliderPicker } from 'react-color';
 
-const SnailForm = ({ onClose }) => {
+const SnailForm = ({ onClose, onSnailSubmit }) => {
   const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm();
   const [personalityFields, setPersonalityFields] = useState([]);
   const [color, setColor] = useState('#bf4040');
 
   const addPersonalityField = () => {
+    console.log(color)
     const newField = {
       key: Date.now().toString(), // Generate a unique key for the field
       value: ''
@@ -32,7 +33,9 @@ const SnailForm = ({ onClose }) => {
   };
 
   const onSubmit = (data) => {
-    const { name, backstory, color } = data;
+
+    const { name, backstory } = data;
+    console.log(color);
 
     const personalityTraits = personalityFields.map((field) => field.value);
 
@@ -43,9 +46,9 @@ const SnailForm = ({ onClose }) => {
       personality: personalityTraits,
     };
 
-    console.log(formData);
+    onSnailSubmit(formData);
+    onClose();
 
-    // Replace with form submission logic
   };
 
   return (

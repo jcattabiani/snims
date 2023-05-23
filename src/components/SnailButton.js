@@ -3,7 +3,7 @@ import { Icon } from '@iconify/react';
 import { Dialog, DialogContent } from '@mui/material';
 import SnailForm from './SnailForm';
 
-const SnailButton = () => {
+const SnailButton = ({ onSnailSubmit }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -42,7 +42,7 @@ const SnailButton = () => {
 
       <Dialog open={isModalOpen} onClose={closeModal} maxWidth="xs" fullWidth>
         <DialogContent>
-          <SnailForm onClose={closeModal} />
+          <SnailForm onClose={closeModal} onSnailSubmit={onSnailSubmit} />
         </DialogContent>
       </Dialog>
     </div>
