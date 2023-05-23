@@ -35,10 +35,7 @@ const SnailForm = ({ onClose, onSnailSubmit }) => {
   const onSubmit = (data) => {
 
     const { name, backstory } = data;
-    console.log(color);
-
     const personalityTraits = personalityFields.map((field) => field.value);
-
     const formData = {
       name,
       backstory,

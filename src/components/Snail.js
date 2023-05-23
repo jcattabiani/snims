@@ -10,6 +10,7 @@ const Snail = ({ color, name }) => {
   const trailRef = useRef([]);
   const requestIdRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
+  const [rotation, setRotation] = useState(0);
 
   function getRandomTargetPosition() {
     const range = Math.min(window.innerWidth, window.innerHeight);
@@ -45,6 +46,10 @@ const Snail = ({ color, name }) => {
       x: prevPosition.x + directionX * stepSize,
       y: prevPosition.y + directionY * stepSize,
     };
+
+    // Calculate the angle of rotation
+    const angle = Math.atan2(directionY, directionX) * (180 / Math.PI);
+    setRotation(angle);
 
     // Update the color trail
     updateTrail(prevPosition, color);
@@ -122,6 +127,7 @@ const Snail = ({ color, name }) => {
               height: '20px',
               background: gradientColor,
               opacity: segment.opacity,
+              borderRadius: '50%',
             }}
           />
         );
@@ -134,18 +140,14 @@ const Snail = ({ color, name }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: '20px',
-          height: '20px',
-          backgroundColor: color,
-          cursor: 'pointer',
         }}
       >
+        <Icon icon="mdi:snail" color={color} width="30" style={{transform: `rotate(${rotation}deg)`}}/>
         {isHovered && (
-          <span style={{ marginLeft: '25px', whiteSpace: 'nowrap' }}>
+          <span style={{ whiteSpace: 'nowrap' }}>
             {name}
           </span>
         )}
-        <Icon icon="mdi:snail" color={'white'} width="30"/>
       </div>
     </div>
   );
