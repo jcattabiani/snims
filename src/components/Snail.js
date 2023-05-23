@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react';
 const Snail = ({ color, name }) => {
   const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const [target, setTarget] = useState(getRandomTargetPosition());
-  const stepSize = .5;
+  const stepSize = 0.5;
   const turnSpeed = 0.02; // Controls the rate of turning
   const trailFadeDuration = 5000; // Duration in milliseconds for the color trail to fade out
   const trailFadeInterval = 16; // Interval in milliseconds to update the trail opacity
@@ -13,6 +13,7 @@ const Snail = ({ color, name }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [direction, setDirection] = useState({ x: 0, y: 0 });
+  const snailRef = useRef(null);
 
   function getRandomTargetPosition() {
     const range = Math.min(window.innerWidth, window.innerHeight);
@@ -144,11 +145,13 @@ const Snail = ({ color, name }) => {
               background: gradientColor,
               opacity: segment.opacity,
               borderRadius: '50%',
+              zIndex: index + 1, // Assign z-index based on segment index
             }}
           />
         );
       })}
       <div
+        ref={snailRef}
         style={{
           position: 'absolute',
           top: `${position.y}px`,
@@ -156,6 +159,7 @@ const Snail = ({ color, name }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          zIndex: trailRef.current.length + 2, // Ensure snails are always rendered on top
         }}
       >
         <Icon icon="mdi:snail" color={color} width="30" style={{ transform: `rotate(${rotation}deg)` }} />
