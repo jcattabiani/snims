@@ -4,13 +4,15 @@ import { Icon } from '@iconify/react';
 const Snail = ({ color, name }) => {
   const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const [target, setTarget] = useState(getRandomTargetPosition());
-  const stepSize = 0.5;
+  const stepSize = .5;
+  const turnSpeed = 0.02; // Controls the rate of turning
   const trailFadeDuration = 5000; // Duration in milliseconds for the color trail to fade out
   const trailFadeInterval = 16; // Interval in milliseconds to update the trail opacity
   const trailRef = useRef([]);
   const requestIdRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [direction, setDirection] = useState({ x: 0, y: 0 });
 
   function getRandomTargetPosition() {
     const range = Math.min(window.innerWidth, window.innerHeight);
@@ -38,23 +40,32 @@ const Snail = ({ color, name }) => {
     }
 
     // Calculate the normalized direction vector towards the target
-    const directionX = deltaX / distance;
-    const directionY = deltaY / distance;
+    const newDirection = {
+      x: deltaX / distance,
+      y: deltaY / distance,
+    };
+
+    // Gradually update the direction
+    const updatedDirection = {
+      x: lerp(direction.x, newDirection.x, turnSpeed),
+      y: lerp(direction.y, newDirection.y, turnSpeed),
+    };
 
     // Calculate the new position by moving towards the target
     const newPosition = {
-      x: prevPosition.x + directionX * stepSize,
-      y: prevPosition.y + directionY * stepSize,
+      x: prevPosition.x + updatedDirection.x * stepSize,
+      y: prevPosition.y + updatedDirection.y * stepSize,
     };
 
-    // Calculate the angle of rotation
-    const angle = Math.atan2(directionY, directionX) * (180 / Math.PI);
-    setRotation(angle);
+    // Calculate the target rotation angle
+    const targetRotation = Math.atan2(updatedDirection.y, updatedDirection.x) * (180 / Math.PI);
 
     // Update the color trail
     updateTrail(prevPosition, color);
 
     setPosition(newPosition);
+    setRotation(targetRotation);
+    setDirection(updatedDirection);
     requestIdRef.current = requestAnimationFrame(moveAgent);
   };
 
@@ -108,6 +119,11 @@ const Snail = ({ color, name }) => {
     };
   }, []);
 
+  // Helper function for linear interpolation
+  const lerp = (start, end, t) => {
+    return (1 - t) * start + t * end;
+  };
+
   return (
     <div
       style={{ position: 'relative' }}
@@ -142,7 +158,7 @@ const Snail = ({ color, name }) => {
           justifyContent: 'center',
         }}
       >
-        <Icon icon="mdi:snail" color={color} width="30" style={{transform: `rotate(${rotation}deg)`}}/>
+        <Icon icon="mdi:snail" color={color} width="30" style={{ transform: `rotate(${rotation}deg)` }} />
         {isHovered && (
           <span style={{ whiteSpace: 'nowrap' }}>
             {name}
