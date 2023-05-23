@@ -13,7 +13,6 @@ const Snail = ({ color, name }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [direction, setDirection] = useState({ x: 0, y: 0 });
-  const snailRef = useRef(null);
 
   function getRandomTargetPosition() {
     const range = Math.min(window.innerWidth, window.innerHeight);
@@ -80,10 +79,10 @@ const Snail = ({ color, name }) => {
     }
 
     // Update trail opacity
-    trailRef.current.forEach((segment) => {
-      const segmentAge = currentTime - segment.timestamp;
-      segment.opacity = Math.max(0, 1 - segmentAge / trailFadeDuration);
-    });
+    // trailRef.current.forEach((segment) => {
+    //   const segmentAge = currentTime - segment.timestamp;
+    //   segment.opacity = Math.max(0, 1 - segmentAge / trailFadeDuration);
+    // });
   };
 
   const handleMouseEnter = () => {
@@ -126,11 +125,7 @@ const Snail = ({ color, name }) => {
   };
 
   return (
-    <div
-      style={{ position: 'relative' }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <>
       {trailRef.current.map((segment, index) => {
         const gradientColor = `linear-gradient(90deg, ${segment.color} 0%, white 100%)`;
         return (
@@ -143,15 +138,14 @@ const Snail = ({ color, name }) => {
               width: '20px',
               height: '20px',
               background: gradientColor,
-              opacity: segment.opacity,
+              opacity: 0.02,
               borderRadius: '50%',
-              zIndex: index + 1, // Assign z-index based on segment index
+              zIndex: index + 1,
             }}
           />
         );
       })}
       <div
-        ref={snailRef}
         style={{
           position: 'absolute',
           top: `${position.y}px`,
@@ -159,8 +153,10 @@ const Snail = ({ color, name }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: trailRef.current.length + 2, // Ensure snails are always rendered on top
+          zIndex: trailRef.current.length + 1,
         }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <Icon icon="mdi:snail" color={color} width="30" style={{ transform: `rotate(${rotation}deg)` }} />
         {isHovered && (
@@ -169,7 +165,7 @@ const Snail = ({ color, name }) => {
           </span>
         )}
       </div>
-    </div>
+    </>
   );
 };
 
