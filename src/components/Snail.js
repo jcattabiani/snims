@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 const Snail = ({ color, name }) => {
   const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const [target, setTarget] = useState(getRandomTargetPosition());
-  const stepSize = 1;
+  const stepSize = .5;
   const trailFadeDuration = 5000; // Duration in milliseconds for the color trail to fade out
   const trailFadeInterval = 16; // Interval in milliseconds to update the trail opacity
   const trailRef = useRef([]);
