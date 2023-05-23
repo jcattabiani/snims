@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 const Snail = ({ color, name }) => {
   const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   const [target, setTarget] = useState(getRandomTargetPosition());
-  const stepSize = 1;
+  const stepSize = .5;
   const requestIdRef = React.useRef(null);
 
   function getRandomTargetPosition() {
