@@ -1,18 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from '@iconify/react';
 
-const Snail = ({ color, name }) => {
-  const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+const Snail = ({ color, name, snails, updateSnails, snail }) => {
+  const [position, setPosition] = useState(getRandomTargetPosition());
   const [target, setTarget] = useState(getRandomTargetPosition());
+  const [isHovered, setIsHovered] = useState(false);
+  const [rotation, setRotation] = useState(0);
+  const [direction, setDirection] = useState({ x: 0, y: 0 });
+  const [interacting, setInteracting] = useState(false);
+  const [available, setAvailable] = useState(true);
+  const trailRef = useRef([]);
+  const requestIdRef = useRef(null);
+  const interactionTimerRef = useRef(500);
+  const interactionCooldownRef = useRef(0);
+
   const stepSize = 0.5;
   const turnSpeed = 0.02; // Controls the rate of turning
   const trailFadeDuration = 5000; // Duration in milliseconds for the color trail to fade out
   const trailFadeInterval = 16; // Interval in milliseconds to update the trail opacity
-  const trailRef = useRef([]);
-  const requestIdRef = useRef(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [rotation, setRotation] = useState(0);
-  const [direction, setDirection] = useState({ x: 0, y: 0 });
+  const interactionSightDistance = 100;
+  const interactionStopDistance = 25;
 
   function getRandomTargetPosition() {
     const range = Math.min(window.innerWidth, window.innerHeight);
@@ -28,6 +35,20 @@ const Snail = ({ color, name }) => {
   }
 
   const moveAgent = () => {
+
+    if (interacting) {
+      if (interactionTimerRef.current > 0) {
+        interactionTimerRef.current -= 1;
+        requestIdRef.current = requestAnimationFrame(moveAgent);
+        return;
+      } else {
+        setInteracting(false);
+        interactionTimerRef.current = 500;
+        interactionCooldownRef.current = 500;
+        setTarget(getRandomTargetPosition());
+      }
+    }
+    
     const prevPosition = position;
     const deltaX = target.x - prevPosition.x;
     const deltaY = target.y - prevPosition.y;
@@ -66,8 +87,41 @@ const Snail = ({ color, name }) => {
     setPosition(newPosition);
     setRotation(targetRotation);
     setDirection(updatedDirection);
+    updateSnails(snail.id, newPosition, available);
+
+    if (interactionCooldownRef.current > 0) interactionCooldownRef.current -= 1;
+    if (!interacting && interactionCooldownRef.current === 0) {
+      setAvailable(true);
+      seekInteraction(newPosition);
+    };
+
     requestIdRef.current = requestAnimationFrame(moveAgent);
   };
+
+  function seekInteraction(newPosition) {
+    const { x: thisX, y: thisY } = newPosition;
+    Object.values(snails).forEach((snail) => {
+      if (!snail.position || snail.name === name || !snail.available) return;
+      const { x: otherX, y: otherY } = snail.position;
+      const distanceToOther = calculateDistance(thisX, thisY, otherX, otherY);
+
+      if (distanceToOther <= interactionSightDistance) {
+        setTarget(snail.position);
+      }
+
+      if (distanceToOther <= interactionStopDistance){
+        setInteracting(true);
+        setAvailable(false);
+      }
+    });
+  }
+
+  function calculateDistance(x1, y1, x2, y2) {
+    const deltaX = Math.abs(x2 - x1);
+    const deltaY = Math.abs(y2 - y1);
+    const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+    return distance;
+  }
 
   const updateTrail = (position, color) => {
     trailRef.current.push({ position, color, opacity: 1, timestamp: Date.now() });

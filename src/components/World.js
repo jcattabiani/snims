@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import '../styles.css';
 import SnailButton from './SnailButton';
@@ -11,10 +10,14 @@ const defaultSnails = [
   { color: 'red', name: 'Eren', id: 4 },
 ];
 
-
-
 const World = () => {
   const [snails, setSnails] = useState(defaultSnails);
+
+  const updateSnails = (snailId, newPosition, available) => {
+    setSnails((prevSnails) =>
+      prevSnails.map((snail) => (snail.id === snailId ? { ...snail, position: newPosition, available: available } : snail))
+    );
+  };
 
   const addSnail = (snail) => {
     setSnails((prevSnails) => [...prevSnails, snail]);
@@ -24,11 +27,23 @@ const World = () => {
     <div className="fullscreen-container">
       <div>
         {snails.map((snail, index) => (
-          <Snail key={index} color={snail.color} name={snail.name} />
+          <Snail
+            key={index}
+            color={snail.color}
+            name={snail.name}
+            distanceThreshold={100}
+            // snailPositions={snails.reduce((positions, snail) => {
+            //   positions[snail.id] = {position: snail.position};
+            //   return positions;
+            // }, {})}
+            snails={snails}
+            updateSnails={updateSnails}
+            snail={snail}
+          />
         ))}
       </div>
       <div className="bottom-right-component">
-        <SnailButton onSnailSubmit={addSnail}/>
+        <SnailButton onSnailSubmit={addSnail} />
       </div>
     </div>
   );
