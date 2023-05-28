@@ -41,6 +41,7 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
       if (interactionTimerRef.current > 0) {
         updateSnails(snail.id, position, false);
         interactionTimerRef.current -= 1;
+        updateTrail(position, color, false);
         requestIdRef.current = requestAnimationFrame(moveAgent);
         return;
       } else {
@@ -77,7 +78,7 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
 
     const targetRotation = Math.atan2(updatedDirection.y, updatedDirection.x) * (180 / Math.PI);
 
-    updateTrail(prevPosition, color);
+    updateTrail(prevPosition, color, true);
 
     setPosition(newPosition);
     setRotation(targetRotation);
@@ -118,8 +119,8 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
     return distance;
   }
 
-  const updateTrail = (position, color) => {
-    trailRef.current.push({ position, color, opacity: 1, timestamp: Date.now() });
+  const updateTrail = (position, color, moving) => {
+    if (moving) trailRef.current.push({ position, color, opacity: 1, timestamp: Date.now() });
 
     const currentTime = Date.now();
     while (trailRef.current.length > 0 && currentTime - trailRef.current[0].timestamp > trailFadeDuration) {
