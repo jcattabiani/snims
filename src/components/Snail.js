@@ -9,15 +9,16 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
   const [direction, setDirection] = useState({ x: 0, y: 0 });
   const [interacting, setInteracting] = useState(false);
   const [available, setAvailable] = useState(true);
+
   const trailRef = useRef([]);
   const requestIdRef = useRef(null);
   const interactionTimerRef = useRef(500);
   const interactionCooldownRef = useRef(0);
 
   const stepSize = 0.5;
-  const turnSpeed = 0.02; // Controls the rate of turning
-  const trailFadeDuration = 5000; // Duration in milliseconds for the color trail to fade out
-  const trailFadeInterval = 16; // Interval in milliseconds to update the trail opacity
+  const turnSpeed = 0.02;
+  const trailFadeDuration = 5000;
+  const trailFadeInterval = 16;
   const interactionSightDistance = 100;
   const interactionStopDistance = 25;
 
@@ -35,7 +36,6 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
   }
 
   const moveAgent = () => {
-
     if (interacting) {
       if (interactionTimerRef.current > 0) {
         interactionTimerRef.current -= 1;
@@ -48,40 +48,33 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
         setTarget(getRandomTargetPosition());
       }
     }
-    
+
     const prevPosition = position;
     const deltaX = target.x - prevPosition.x;
     const deltaY = target.y - prevPosition.y;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-    // Check if the agent has reached the target position
     if (distance <= stepSize) {
-      // Calculate a new target position within a certain range
       setTarget(getRandomTargetPosition());
     }
 
-    // Calculate the normalized direction vector towards the target
     const newDirection = {
       x: deltaX / distance,
       y: deltaY / distance,
     };
 
-    // Gradually update the direction
     const updatedDirection = {
       x: lerp(direction.x, newDirection.x, turnSpeed),
       y: lerp(direction.y, newDirection.y, turnSpeed),
     };
 
-    // Calculate the new position by moving towards the target
     const newPosition = {
       x: prevPosition.x + updatedDirection.x * stepSize,
       y: prevPosition.y + updatedDirection.y * stepSize,
     };
 
-    // Calculate the target rotation angle
     const targetRotation = Math.atan2(updatedDirection.y, updatedDirection.x) * (180 / Math.PI);
 
-    // Update the color trail
     updateTrail(prevPosition, color);
 
     setPosition(newPosition);
@@ -93,7 +86,7 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
     if (!interacting && interactionCooldownRef.current === 0) {
       setAvailable(true);
       seekInteraction(newPosition);
-    };
+    }
 
     requestIdRef.current = requestAnimationFrame(moveAgent);
   };
@@ -109,7 +102,7 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
         setTarget(snail.position);
       }
 
-      if (distanceToOther <= interactionStopDistance){
+      if (distanceToOther <= interactionStopDistance) {
         setInteracting(true);
         setAvailable(false);
       }
@@ -126,17 +119,10 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
   const updateTrail = (position, color) => {
     trailRef.current.push({ position, color, opacity: 1, timestamp: Date.now() });
 
-    // Remove old trail segments
     const currentTime = Date.now();
     while (trailRef.current.length > 0 && currentTime - trailRef.current[0].timestamp > trailFadeDuration) {
       trailRef.current.shift();
     }
-
-    // Update trail opacity
-    // trailRef.current.forEach((segment) => {
-    //   const segmentAge = currentTime - segment.timestamp;
-    //   segment.opacity = Math.max(0, 1 - segmentAge / trailFadeDuration);
-    // });
   };
 
   const handleMouseEnter = () => {
@@ -156,14 +142,12 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
   }, [position, target]);
 
   useEffect(() => {
-    // Clear the trail when the component unmounts
     return () => {
       trailRef.current = [];
     };
   }, []);
 
   useEffect(() => {
-    // Update the trail opacity at a regular interval
     const intervalId = setInterval(() => {
       trailRef.current = trailRef.current.filter((segment) => segment.opacity > 0);
     }, trailFadeInterval);
@@ -173,7 +157,6 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
     };
   }, []);
 
-  // Helper function for linear interpolation
   const lerp = (start, end, t) => {
     return (1 - t) * start + t * end;
   };
@@ -212,12 +195,13 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <Icon icon="mdi:snail" color={color} width="30" style={{ transform: `rotate(${rotation}deg)` }} />
-        {isHovered && (
-          <span style={{ whiteSpace: 'nowrap' }}>
-            {name}
-          </span>
-        )}
+        <Icon
+          icon="mdi:snail"
+          color={color}
+          width="30"
+          style={{ transform: `rotate(${rotation}deg)` }}
+        />
+        {isHovered && <span style={{ whiteSpace: 'nowrap' }}>{name}</span>}
       </div>
     </>
   );
