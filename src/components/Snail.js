@@ -36,8 +36,10 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
   }
 
   const moveAgent = () => {
+    
     if (interacting) {
       if (interactionTimerRef.current > 0) {
+        updateSnails(snail.id, position, false);
         interactionTimerRef.current -= 1;
         requestIdRef.current = requestAnimationFrame(moveAgent);
         return;
@@ -54,7 +56,7 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
     const deltaY = target.y - prevPosition.y;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-    if (distance <= stepSize) {
+    if (distance <= stepSize*2) {
       setTarget(getRandomTargetPosition());
     }
 
