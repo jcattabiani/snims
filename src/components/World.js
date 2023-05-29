@@ -16,16 +16,20 @@ const defaultSnails = [
 
 const World = () => {
   const [snails, setSnails] = useState(defaultSnails);
+  const [isPaused, setIsPaused] = useState(false);
 
   const updateSnails = (snailId, newPosition, available) => {
     setSnails((prevSnails) =>
       prevSnails.map((snail) => (snail.id === snailId ? { ...snail, position: newPosition, available: available } : snail))
     );
-
   };
 
   const addSnail = (snail) => {
     setSnails((prevSnails) => [...prevSnails, snail]);
+  };
+
+  const handlePausePlay = () => {
+    setIsPaused((prevPaused) => !prevPaused);
   };
 
   return (
@@ -37,15 +41,17 @@ const World = () => {
             color={snail.color}
             name={snail.name}
             distanceThreshold={100}
-            // snailPositions={snails.reduce((positions, snail) => {
-            //   positions[snail.id] = {position: snail.position};
-            //   return positions;
-            // }, {})}
             snails={snails}
             updateSnails={updateSnails}
             snail={snail}
+            isPaused={isPaused}
           />
         ))}
+      </div>
+      <div className="top-right-component">
+        <button onClick={handlePausePlay}>
+          {isPaused ? 'Play' : 'Pause'}
+        </button>
       </div>
       <div className="bottom-right-component">
         <SnailButton onSnailSubmit={addSnail} />

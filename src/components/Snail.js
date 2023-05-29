@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from '@iconify/react';
 
-const Snail = ({ color, name, snails, updateSnails, snail }) => {
+const Snail = ({ color, name, snails, updateSnails, snail, isPaused }) => {
   const [position, setPosition] = useState(getRandomTargetPosition());
   const [target, setTarget] = useState(getRandomTargetPosition());
   const [isHovered, setIsHovered] = useState(false);
@@ -9,6 +9,7 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
   const [direction, setDirection] = useState({ x: 0, y: 0 });
   const [interacting, setInteracting] = useState(false);
   const [available, setAvailable] = useState(true);
+  const [displayText, setDisplayText] = useState('');
 
   const trailRef = useRef([]);
   const requestIdRef = useRef(null);
@@ -21,6 +22,32 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
   const trailFadeInterval = 16;
   const interactionSightDistance = 100;
   const interactionStopDistance = 25;
+
+  const sendPromptToChatAPI = (prompt) => {
+    const apiUrl = 'https://api.openai.com/v1/chat/completions';
+    const data = {
+      messages: [{ role: 'system', content: 'You are a snail.' }, { role: 'user', content: prompt }],
+      model: 'gpt-3.5-turbo',
+    };
+
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer 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',
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Handle the response from the Chat GPT API
+        const reply = data.choices[0].message.content;
+        setDisplayText(reply);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
 
   function getRandomTargetPosition() {
     const range = Math.min(window.innerWidth, window.innerHeight);
@@ -36,8 +63,16 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
   }
 
   const moveAgent = () => {
+    if (isPaused) {
+      requestIdRef.current = requestAnimationFrame(moveAgent);
+      return;
+    }
     
     if (interacting) {
+      if (interactionTimerRef.current === 500) {
+        const prompt = `say hello`;
+        sendPromptToChatAPI(prompt);
+      }
       if (interactionTimerRef.current > 0) {
         updateSnails(snail.id, position, false);
         interactionTimerRef.current -= 1;
@@ -142,7 +177,7 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
     return () => {
       cancelAnimationFrame(requestIdRef.current);
     };
-  }, [position, target]);
+  }, [position, target, isPaused]);
 
   useEffect(() => {
     return () => {
@@ -205,6 +240,7 @@ const Snail = ({ color, name, snails, updateSnails, snail }) => {
           style={{ transform: `rotate(${rotation}deg)` }}
         />
         {isHovered && <span style={{ whiteSpace: 'nowrap' }}>{name}</span>}
+        {displayText && <span style={{ whiteSpace: 'nowrap' }}>{displayText}</span>}
       </div>
     </>
   );
