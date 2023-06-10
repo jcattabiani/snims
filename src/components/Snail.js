@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from '@iconify/react';
 
-const Snail = ({ color, name, snails, updateSnails, snail, isPaused }) => {
+const Snail = ({ color, name, snails, updateSnails, snail, isPaused, initInteraction }) => {
   const [position, setPosition] = useState(getRandomTargetPosition());
   const [target, setTarget] = useState(getRandomTargetPosition());
   const [isHovered, setIsHovered] = useState(false);
@@ -23,32 +23,6 @@ const Snail = ({ color, name, snails, updateSnails, snail, isPaused }) => {
   const interactionSightDistance = 100;
   const interactionStopDistance = 25;
 
-  const sendPromptToChatAPI = (prompt) => {
-    const apiUrl = 'https://api.openai.com/v1/chat/completions';
-    const data = {
-      messages: [{ role: 'system', content: 'You are a snail.' }, { role: 'user', content: prompt }],
-      model: 'gpt-3.5-turbo',
-    };
-
-    fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer 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',
-      },
-      body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(data => {
-        // Handle the response from the Chat GPT API
-        const reply = data.choices[0].message.content;
-        setDisplayText(reply);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  };
-
   function getRandomTargetPosition() {
     const range = Math.min(window.innerWidth, window.innerHeight);
     const newTarget = {
@@ -69,10 +43,6 @@ const Snail = ({ color, name, snails, updateSnails, snail, isPaused }) => {
     }
     
     if (interacting) {
-      if (interactionTimerRef.current === 500) {
-        const prompt = `say hello`;
-        sendPromptToChatAPI(prompt);
-      }
       if (interactionTimerRef.current > 0) {
         updateSnails(snail.id, position, false);
         interactionTimerRef.current -= 1;
@@ -131,18 +101,19 @@ const Snail = ({ color, name, snails, updateSnails, snail, isPaused }) => {
 
   function seekInteraction(newPosition) {
     const { x: thisX, y: thisY } = newPosition;
-    Object.values(snails).forEach((snail) => {
-      if (!snail.position || snail.name === name || !snail.available) return;
-      const { x: otherX, y: otherY } = snail.position;
+    Object.values(snails).forEach((otherSnail) => {
+      if (!otherSnail.position || otherSnail.name === name || !otherSnail.available) return;
+      const { x: otherX, y: otherY } = otherSnail.position;
       const distanceToOther = calculateDistance(thisX, thisY, otherX, otherY);
 
       if (distanceToOther <= interactionSightDistance) {
-        setTarget(snail.position);
+        setTarget(otherSnail.position);
       }
 
       if (distanceToOther <= interactionStopDistance) {
         setInteracting(true);
         setAvailable(false);
+        if (snail.name > otherSnail.name) initInteraction(snail, otherSnail);
       }
     });
   }

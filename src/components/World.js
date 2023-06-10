@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import '../styles.css';
 import SnailButton from './SnailButton';
 import Snail from './Snail';
-
+import apiService from '../services/apiService.js';
 const defaultSnails = [
-  { color: 'green', name: 'Goopie', id: 1 },
-  { color: 'orange', name: 'TJ Cream', id: 2 },
-  { color: 'blue', name: 'Glubtubbis Wepple', id: 3 },
-  { color: 'red', name: 'Eren', id: 4 },
+  { color: 'green', name: 'Douglas', id: 1 },
+  { color: 'orange', name: 'Mango', id: 2 },
+  { color: 'blue', name: 'Mitts', id: 3 },
+  { color: 'red', name: 'Jeremy', id: 4 },
   // { color: 'purple', name: '5', id: 5 },
   // { color: 'yellow', name: '6', id: 6 },
   // { color: 'cyan', name: '7', id: 7 },
@@ -32,6 +32,14 @@ const World = () => {
     setIsPaused((prevPaused) => !prevPaused);
   };
 
+  const initInteraction = (s1, s2) => {
+    apiService.simulateDialogue(s1, s2, handleDialogue);
+  }
+
+  const handleDialogue = (s1, s2, dialogue) => {
+    console.log(dialogue);
+  }
+
   return (
     <div className="fullscreen-container">
       <div>
@@ -45,6 +53,7 @@ const World = () => {
             updateSnails={updateSnails}
             snail={snail}
             isPaused={isPaused}
+            initInteraction={initInteraction}
           />
         ))}
       </div>
