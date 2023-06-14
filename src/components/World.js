@@ -40,10 +40,10 @@ const World = () => {
 
   const handleDialogue = (s1, s2, dialogue) => {
     console.log(dialogue);
-    const lines1 = [];
-    const lines2 = [''];
+    let lines1 = [];
+    let lines2 = [''];
     dialogue.forEach((line, i) => {
-      (i%2 === 0) ? lines1.push(line) : lines2.push(line);
+      (i%2 === 0) ? lines1 = lines1.concat([line, '']) : lines2 = lines2.concat([line, '']);
     });
     const s1Left = s1.position.x < s2.position.left;
     const dialogue1 = {
