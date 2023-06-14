@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from '@iconify/react';
 
-const Snail = ({ color, name, snails, updateSnails, snail, isPaused, initInteraction }) => {
+const Snail = ({ color, name, snails, updateSnails, snail, isPaused, initInteraction, dialogue }) => {
   const [position, setPosition] = useState(getRandomTargetPosition());
   const [target, setTarget] = useState(getRandomTargetPosition());
   const [isHovered, setIsHovered] = useState(false);
@@ -37,11 +37,12 @@ const Snail = ({ color, name, snails, updateSnails, snail, isPaused, initInterac
   }
 
   const moveAgent = () => {
+
     if (isPaused) {
       requestIdRef.current = requestAnimationFrame(moveAgent);
       return;
     }
-    
+
     if (interacting) {
       if (interactionTimerRef.current > 0) {
         updateSnails(snail.id, position, false);
