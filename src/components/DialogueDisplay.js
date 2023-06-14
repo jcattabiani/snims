@@ -1,21 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import '../styles.css';
 
 const DialogueDisplay = ({ dialogue, snail }) => {
   const [displayedLineIndex, setDisplayedLineIndex] = useState(0);
+  const [fadeIn, setFadeIn] = useState(false);
 
   const dialogueLines = dialogue.lines;
-  const { x, y } = snail.position; 
+  const { x, y } = snail.position;
   const { left } = dialogue;
   const lineCycleTime = 2000;
 
   useEffect(() => {
-
     if (displayedLineIndex >= dialogueLines.length) {
       return;
     }
 
     const timeout = setTimeout(() => {
       setDisplayedLineIndex(prevIndex => prevIndex + 1);
+      setFadeIn(true);
     }, lineCycleTime);
 
     return () => clearTimeout(timeout);
@@ -28,7 +30,8 @@ const DialogueDisplay = ({ dialogue, snail }) => {
     top: y,
     maxWidth: '100px',
     overflowWrap: 'break-word',
-    left: left ? x - 100 : x + 50
+    left: left ? x - 100 : x + 50,
+    animation: fadeIn ? 'fade-in 0.5s ease-in-out forwards' : 'none',
   };
 
   return (
