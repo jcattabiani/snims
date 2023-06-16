@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Icon } from '@iconify/react';
 
-const Snail = ({ color, name, snails, updateSnails, snail, isPaused, initInteraction, dialogue }) => {
+const Snail = ({ color, name, snails, updateSnails, snail, isPaused, initInteraction }) => {
   const [position, setPosition] = useState(getRandomTargetPosition());
   const [target, setTarget] = useState(getRandomTargetPosition());
   const [isHovered, setIsHovered] = useState(false);

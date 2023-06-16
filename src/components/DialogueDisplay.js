@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles.css';
 
-const DialogueDisplay = ({ dialogue, snail }) => {
+const DialogueDisplay = ({ dialogue, snail, finishDialogue }) => {
   const [displayedLineIndex, setDisplayedLineIndex] = useState(0);
   const [fadeIn, setFadeIn] = useState(false);
 
@@ -12,6 +12,7 @@ const DialogueDisplay = ({ dialogue, snail }) => {
 
   useEffect(() => {
     if (displayedLineIndex >= dialogueLines.length) {
+      finishDialogue(dialogue.id);
       return;
     }
 

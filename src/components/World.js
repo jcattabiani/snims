@@ -58,9 +58,11 @@ const World = () => {
       left: !s1Left,
       lines: lines2,
     }
-    const newDialogues = dialogues;
-    setDialogues(newDialogues.concat([dialogue1, dialogue2]));
-    
+    setDialogues(dialogues.concat([dialogue1, dialogue2]));
+  }
+
+  const finishDialogue = (id) => {
+    setDialogues(dialogues.filter(dialogue => dialogue.id !== id));
   }
 
   return (
@@ -78,14 +80,14 @@ const World = () => {
             lines = {snail.lines}
             isPaused={isPaused}
             initInteraction={initInteraction}
-            dialogue={dialogues.filter(dialogue => dialogue.id === snail.id)}
           />
         ))}
-        {dialogues.map((dialogueObject, index) => (
+        {dialogues.map(dialogueObject => (
           <DialogueDisplay 
-            key={index}
+            key={dialogueObject.id}
             dialogue={dialogueObject}
             snail={snails.find(snail => snail.id === dialogueObject.id)}
+            finishDialogue={finishDialogue}
           />
         ))}
       </div>
