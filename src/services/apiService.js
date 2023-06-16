@@ -1,5 +1,5 @@
 const apiUrl = 'https://api.openai.com/v1/chat/completions';
-const apiKey = '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';
+const apiKey = 'Insert-Your-Key';
 
 const simulateDialogue = (snail1, snail2, handleDialogue) => {
   const data = {
